@@ -19,14 +19,21 @@ namespace W25W11TypedDataSets
         // table adapters
         NorthwindDataSetTableAdapters.ProductsTableAdapter adpProducts = new NorthwindDataSetTableAdapters.ProductsTableAdapter();
 
+        NorthwindDataSetTableAdapters.CategoriesTableAdapter adpCategories = new NorthwindDataSetTableAdapters.CategoriesTableAdapter();
+
+        NorthwindDataSetTableAdapters.ProdsWithCatsTableAdapter adpProdsCats = new NorthwindDataSetTableAdapters.ProdsWithCatsTableAdapter();
+
         // data tables
         NorthwindDataSet.ProductsDataTable tblProducts = new NorthwindDataSet.ProductsDataTable();
+        NorthwindDataSet.CategoriesDataTable tblCategories = new NorthwindDataSet.CategoriesDataTable();
+        NorthwindDataSet.ProdsWithCatsDataTable tblProdsCats = new NorthwindDataSet.ProdsWithCatsDataTable();
 
         public MainWindow()
         {
             InitializeComponent();
 
             LoadProducts();
+            LoadCategoriesInCombobox();
         }
 
         private void LoadProducts()
@@ -38,6 +45,14 @@ namespace W25W11TypedDataSets
             tblProducts = adpProducts.GetProducts();
 
             grdProducts.ItemsSource = tblProducts;
+        }
+
+        private void LoadCategoriesInCombobox()
+        {
+            tblCategories = adpCategories.GetCategories();
+            cmbCategories.ItemsSource = tblCategories;
+            cmbCategories.DisplayMemberPath = "CategoryName";
+            cmbCategories.SelectedValuePath = "CategoryID";
         }
 
         private void btnLoadAllProducts_Click(object sender, RoutedEventArgs e)
@@ -96,6 +111,19 @@ namespace W25W11TypedDataSets
 
             LoadProducts();
             MessageBox.Show("Product deleted");
+        }
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            tblProducts = adpProducts.GetProductsByName(txtName.Text);
+            grdProducts.ItemsSource = tblProducts;
+        }
+
+        private void cmbCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int catId = (int)cmbCategories.SelectedValue;
+            tblProdsCats = adpProdsCats.GetProductsByCatId(catId);
+            grdProducts.ItemsSource = tblProdsCats;
         }
     }
 }
